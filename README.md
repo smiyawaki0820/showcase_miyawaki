@@ -20,3 +20,4 @@ input data (train_edit.py)
     "https://gyazo.com/9d422a75a420cd477d1e9dca64845e6c"
 - score:
     "https://gyazo.com/7bbf1791e1d5cad0cb3003e73bd2b3d4"
+    * ここの各列にラベルベクトルを
