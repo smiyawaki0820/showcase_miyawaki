@@ -13,5 +13,10 @@ https://scrapbox.io/tohoku-nlp/Miyawaki_AR
 * 得られたラベルベクトルに対して， 入力ラベルベクトルに上書き
 
 
-input data
-- 
+input data (train_edit.py)
+- xss: 
+    <img src="https://gyazo.com/f6e8f380e3dce6e7c9fa1f95ff84f62b" />
+- yss: 
+    <img src="https://gyazo.com/9d422a75a420cd477d1e9dca64845e6c" />
+- score:
+    <img src="https://gyazo.com/7bbf1791e1d5cad0cb3003e73bd2b3d4" />
