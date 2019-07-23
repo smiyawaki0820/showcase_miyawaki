@@ -9,5 +9,5 @@ https://scrapbox.io/tohoku-nlp/Miyawaki_AR
 ### 方針
 * 入力ベクトルに次元４のラベルベクトルをconcat
 * 得られたラベルベクトルに対して， 上位nまでを採用
-<img src="https://latex.codecogs.com/gif.latex?n&space;=&space;N&space;\cdot&space;\frac{T-t}{T}" />
+  <img src="https://latex.codecogs.com/gif.latex?n&space;=&space;N&space;\cdot&space;\frac{T-t}{T}" />
 * 得られたラベルベクトルに対して， 入力ラベルベクトルに上書き
