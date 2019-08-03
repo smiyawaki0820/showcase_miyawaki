@@ -1,6 +1,7 @@
 `home/miyawaki_shumpei/YANS/showcase_miyawaki/yans2019/edit`
 
-```実行
+- 実行 (train)
+```
 bash train_edit.sh -g [GPU_id] -i ~/PAS/NTC_Matsu_converted -o [output_dir]
 ```
 
