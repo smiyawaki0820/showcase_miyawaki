@@ -46,13 +46,9 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
     ## load ##
     #if os.path.exists('./result/model-' + model_id + '.h5'):
     #    model.load_state_dict(torch.load("./result/model-" + model_id +".h5"))
-    LOAD_PATH = "basecopy_model-e2e-stack_ve256_vu256_10_adam_lr0.0002_du0.1_dh0.0_True_size100_sub0_th0.6_it3.h5"
-    if os.path.exists('./result/model-' + model_id + '.h5'):
-        model.load_state_dict(torch.load("./result/model-" + model_id + '.h5'))
-        print("loading... model-" + model_id + '.h5')
-    elif os.path.exists('./result/' + LOAD_PATH):
-        model.load_state_dict(torch.load("./result/" + LOAD_PATH))
-        print("loading... ", LOAD_PATH)
+    #LOAD_PATH = "model-e2e-stack_ve256_vu256_10_adam_lr0.0002_du0.1_dh0.0_True_size10_sub0.h5"
+    #if os.path.exists('./result/' + LOAD_PATH):
+    #    model.load_state_dict(torch.load("./result/" + LOAD_PATH))
 
     loss_function = nn.NLLLoss()
 
@@ -138,30 +134,20 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
            if torch.cuda.is_available():
               temp = temp.cuda()
            
+           scores = model(xss, temp)
            ### iterate in epoch ###
-           high_score = {}
+           '''
            for t in range(iterate_num):
                num_of_high = 0
-               if high_score:
-                  for b, w in high_score.items():
-                      for w_i, l in w.items():
-                          temp[b, w_i,:] = l
                scores = model(xss, temp)
                for batch_idx, batch in enumerate(scores):
-                   batch_high_score = {}
                    for word_idx in range(batch.size(0)):
                        if torch.max(batch[word_idx]) >= math.log(threshold) and torch.argmax(batch[word_idx]) <= 2:
                            num_of_high += 1
-                           batch_high_score[word_idx] = batch[word_idx]
                            temp[batch_idx, word_idx, :] = batch[word_idx]
-                           # print(temp)
-                   if high_score.get(batch_idx):
-                      if high_score[batch_idx].get(word_idx):
-                          pass
-                   else:
-                      if batch_high_score:
-                          high_score[batch_idx] = batch_high_score
-
+                           print(temp)
+                   print(num_of_high)
+           '''
 
            loss = 0
            for i in range(yss.size()[0]):
@@ -186,7 +172,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         
         ### 評価モード ###
         model.eval()
-        thres, obj_score, num_test_batch_instance = evaluate_multiclass_without_none(model, data_dev, len_dev, labels,thres_lists, model_id, threshold, iterate_num, ep)
+        thres, obj_score, num_test_batch_instance = evaluate_multiclass_without_none(model, data_dev, len_dev, labels,thres_lists, model_id, threshold, iterate_num)
         f = obj_score * 100
         if f > best_performance:
             best_performance = f

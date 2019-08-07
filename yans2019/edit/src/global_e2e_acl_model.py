@@ -27,12 +27,12 @@ class E2EStackedBiRNN(nn.Module):
             self.word_emb.weight.requires_grad = False
 
         # input is a set of embedding and predicate marker
-        self.gru = BiGRUForSRL(self.embedding_dim + 1+4, dim_u, num_layers=depth, dropout=drop_u)
+        self.gru = BiGRUForSRL(self.embedding_dim +1, dim_u, num_layers=depth, dropout=drop_u)
         self.output_layer = nn.Linear(dim_u, dim_out)
 
-    def forward(self, x, l):
+    def forward(self, x):
         words, is_target = x
-        
+        # print('###########', words, is_target)
         if torch.cuda.is_available():
             words = autograd.Variable(words).cuda()
             is_target = autograd.Variable(is_target).cuda()
@@ -41,14 +41,7 @@ class E2EStackedBiRNN(nn.Module):
             is_target = autograd.Variable(is_target)
 
         embeds = self.word_emb(words)
-        #print(embeds.size(), is_target.size(), l.size())
-        inputs = torch.cat([embeds, is_target, l], dim=2)
-        
+        inputs = torch.cat([embeds, is_target], dim=2)
         outputs = self.gru(inputs)
-        # sm = nn.Softmax()
-        #for out in outputs:
-        #  print('## out ##', self.output_layer(out))
-        ret = [F.log_softmax(self.output_layer(out)) for out in outputs]
-        # print('## ret ##', ret, sep='\n')
-        return ret
-        
+
+        return [F.log_softmax(self.output_layer(out)) for out in outputs]
