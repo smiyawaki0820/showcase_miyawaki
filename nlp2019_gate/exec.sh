@@ -85,8 +85,13 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python src/test_e2e_arg_model_output_json.py \
 | tee -a work/gate.log
 
 ### inform ###
+pwd=$()
 if ${INFORM}; then
-  curl -X POST -H 'Content-type: application/json' --data '{"text":"finish layer iteration"}' https://hooks.slack.com/services/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
+  lsc = $(tmux lsc)
+  TEXT="text"
+  MESSAGE="finish gate\n tmux:${lsc}\n @${HOST}}"
+  MES="[{${TEXT}:${MESSAGE}}]"
+  curl -X POST -H 'Content-type: application/json' --data ${MES} https://hooks.slack.com/services/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
 fi
 
 done
