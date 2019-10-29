@@ -5,6 +5,8 @@ import os
 import sys
 from os import path
 import time
+import json
+import math
 
 import torch.nn as nn
 from torch import autograd
@@ -40,6 +42,8 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
     lr_epsilon = lr_min * 1e-4
     
     iterate_num = 1 # T とりあえずn回モデルに入力する
+    dic_score = {}
+    threshold = 0.75
 
     loss_function = nn.NLLLoss()
 
@@ -52,8 +56,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
     thres_lists = [thres_set_ga, thres_set_wo, thres_set_ni]
     labels = ["ga", "wo", "ni", "all"]
 
-    count = 0
-
+    
     for ep in range(epoch):
         start_time = time.time() 
         total_loss = torch.Tensor([0])
@@ -65,14 +68,16 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         random.shuffle(data_train)
         
         
+        count = -1
 
         ### 訓練モード ###
         model.train()
         for xss, yss in tqdm(data_train, total=len_train, mininterval=5):
             
-            # print('yss:', yss.size())
+            count += 1
+            
             temp = torch.ones(yss.size()[0], yss.size()[1], 4) * 0
-            #print('000', temp.size())
+            # print('=== ', temp.size())
             if yss.size(1) > max_sentence_length:
                 continue
 
@@ -84,18 +89,94 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
                 temp = temp.cuda()
             else:
                 yss = autograd.Variable(yss)
+            
+            '''
+            with open('./work/epoch.txt', 'a') as f:
+                f.write('/* epoch毎一番初めの要素のxss, yss */')
+                if count <= 0:
+                    print(ep, xss, yss, sep='\n\n', file=f)
+            '''
+            
+            ### 今度はscoreをjsonファイルに書き込んで ###
+            
+            if dic_score.get(count):
+                #dic = dic_score[1]
+                for batch, hoge in dic_score.items():
+                    for word_idx, word_vec in hoge.items():
+                        temp[int(batch)][int(word_idx),:] = torch.from_numpy(np.array(word_vec)).cuda()
+            '''
+            if os.path.exists('./score.json'):
+                with open('./score.json') as json_file:
+                    df = json.load(json_file)
+            
+                print(df)
+                dic = df.get(count)
+                if dic:
+                    size = dic[0]
+            
+                    for batch, hoge in dic[1].items():
+                        for word_idx, word_vec in hoge.items():
+                            temp[int(batch)][int(word_idx),:] = torch.from_numpy(np.array(word_vec)).cuda()
+            
+            '''
+            scores = model(xss, temp)
+           
+            
 
+
+            '''
+            with open('./work/out_score.txt', 'w') as f:
+                f.write('/* スコア一覧 */')
+                print(yss, scores, sep='\n\n', file=f)
+            
+            # print(scores)
+            '''
+            big, small = {}, {}
+            for i, el in enumerate(scores):
+                for j in range(el.size(0)):
+                    if torch.max(el[j]) >= math.log(threshold) and torch.argmax(el[j]) <= 2:
+                        #print(el[j])
+                        small.setdefault(j, el[j].detach().cpu().numpy().tolist())
+                big.setdefault(i, small)
+                small = {}
+            
+            if big:
+                dic_score.setdefault(count, big)#(str(len(scores))+' '+str(scores[0].size(0))+' '+str(scores[0].size(1)), big))
+                  
+
+            big = {}
+            #with open('./score.json', 'a') as fil:
+            #    json.dump(dic_score, fil, indent=4, sort_keys=True)
+           
+                
+
+            
+            
+            
             ### ここで繰り返し入力する ###
-            if ep >= 1:
+            '''
+            if ep >= 2:
                 for t in range(iterate_num):
                     scores = model(xss, temp)
+                    # lis = []
+                    # for s in scores:
+                        # if max(s) >= threshold:
+                            # lis.append(s)
+                        # else:
+                            # lils.append(0)
+                    # temp = torch.stack(lis. dim=0)
                     temp = torch.stack([s for s in scores], dim=0)
+                    
+                    # temp, yssの確認
                     if count <= 5:
-                      count += 1
-                      print('LABEL-EMB', temp) # ラベルベクトルの中身をチェック
-                      print('yss', yss)        # yss とのロスを計算している
+                        count += 1
+                        print('LABEL-EMB', temp) # ラベルベクトルの中身をチェック
+                        print('yss', yss)        # yss とのロスを計算している
+                    
             else:
                 scores = model(xss, temp)
+            '''
+
             ### memo ###
             '''
             if count <= 0:
@@ -115,8 +196,12 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
             total_loss += loss.data.cpu()
             print(total_loss, file=open('../loss.txt', 'w'), end='\n')
 
+        with open('./work/score.json', 'w') as json_f:
+            json.dump(dic_score, json_f, indent=4, sort_keys=True)
+        #print(dic_score)
+
         print("loss:", total_loss[0], "lr:", lr, "time:", round(time.time()-start_time,2))
-        print('score: ', scores, 'yss: ', yss, sep='\n')
+        
         losses.append(total_loss)
         print("", flush=True)
         print('Test...', flush=True)
