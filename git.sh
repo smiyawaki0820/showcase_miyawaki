@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-read s Y m d H M S ms ns <<< "$(date + '%s %Y %m %d %H %M %S %ms %ns')"
+read s Y m d H M S ms ns <<< "$(date + '%s %Y %m %d %H ')"
 
 git pull
 git add .
