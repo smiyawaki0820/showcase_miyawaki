@@ -15,7 +15,7 @@ def my_index(l, x, default=False):
     return [i for i,e in enumerate(l) if x == e]
 
 def evaluate_multiclass_without_none(model, data_test, len_test,
-                                     labels, thres_lists, model_id, threshold, iterate_num, ep):
+                                     labels, thres_lists, model_id, threshold, iterate_num, ep, null_label):
     num_test_instance = 0
 
     results = defaultdict(dict)
@@ -34,7 +34,7 @@ def evaluate_multiclass_without_none(model, data_test, len_test,
             continue
         num_test_instance += 1
 
-        scores = model(xss, temp, iterate_num, threshold)
+        scores = model(xss, temp, iterate_num, threshold, null_label)
         print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result/edit/hoge/'+model_id+'_WRjudge.txt', 'a'))
         high_score = {}
         for i in range(yss.size()[0]):

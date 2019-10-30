@@ -29,8 +29,7 @@ max_sentence_length = 90
 prediction_model_id = 3
 
 
-def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_min, threshold, iterate_num):
-    
+def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_min, threshold, iterate_num, null_label):
   
     len_train = len(data_train)
     len_dev = len(data_dev)
@@ -49,20 +48,20 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
     if LOAD:
       LOAD_PATH = "model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th0.8_it3_rs2016_preFalse.h5"
       '''
-      if os.path.exists('./result_new/model-' + model_id + '.h5'):
+      if os.path.exists('./result/model-' + model_id + '.h5'):
           model.load_state_dict(torch.load("./result/model-" + model_id + '.h5'))
       '''
-      if os.path.exists('./result_new/edit/' + LOAD_PATH):
-          model.load_state_dict(torch.load("./result_new/edit/" + LOAD_PATH))
+      if os.path.exists('./result/edit/' + LOAD_PATH):
+          model.load_state_dict(torch.load("./result/edit/" + LOAD_PATH))
           print('LOAD: ', LOAD_PATH)
     
       
     header = ['','p', 'r', 'f1', 'p_p', 'ppnp', 'pppn']
-    with open('./result_new/edit/log/model-' + model_id + '.csv', 'a') as csv_f:
+    with open('./result/edit/log/model-' + model_id + '.csv', 'a') as csv_f:
         writer = csv.writer(csv_f, delimiter='\t')
         writer.writerow(header)
         writer.writerow([])
-    print('\n\n', file=open('./result_new/edit/log/model-'+model_id+'_loss.txt', 'a'))
+    print('\n\n', file=open('./result/edit/log/model-'+model_id+'_loss.txt', 'a'))
 
 
     loss_function = nn.NLLLoss()
@@ -82,7 +81,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         start_time = time.time() 
         total_loss = torch.Tensor([0])
         early_stopping_count += 1
-        print("### ", ep, " ###", file=open('./result_new/edit/hoge/'+model_id+'_WRjudge.txt', 'a'))
+        print("### ", ep, " ###", file=open('./result/edit/hoge/'+model_id+'_WRjudge.txt', 'a'))
         print(model_id, 'epoch {0}'.format(ep + 1), flush=True)
 
         print('Train...', flush=True)
@@ -116,7 +115,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
               temp = temp.cuda()
            
            ### iterate in epoch ###
-           scores = model(xss, temp, iterate_num, threshold)
+           scores = model(xss, temp, iterate_num, threshold, null_label)
            
            """
            for t in range(iterate_num):
@@ -152,7 +151,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
            count += 1
 
         print("loss:", total_loss[0], "lr:", lr, "time:", round(time.time()-start_time,2))
-        print(str(float(total_loss[0])), file=open('./result_new/edit/log/model-'+model_id+'_loss.txt', 'a'))
+        print(str(float(total_loss[0])), file=open('./result/edit/log/model-'+model_id+'_loss.txt', 'a'))
         losses.append(total_loss)
         print("pred_count_train", pred_count_train)
         print("", flush=True)
@@ -161,7 +160,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         
         ### 評価モード ###
         model.eval()
-        thres, obj_score, num_test_batch_instance = evaluate_multiclass_without_none(model, data_dev, len_dev, labels,thres_lists, model_id, threshold, iterate_num, ep)
+        thres, obj_score, num_test_batch_instance = evaluate_multiclass_without_none(model, data_dev, len_dev, labels,thres_lists, model_id, threshold, iterate_num, ep, null_label)
         f = obj_score * 100
         if f > best_performance:
             best_performance = f
@@ -223,7 +222,7 @@ def create_model_id(args):
     depth = args.depth
     dim = 've{0}_vu{0}'.format(args.vec_size_u)
 
-    return "{0}_{1}_depth{2}_{3}_lr{4}_du{5}_dh{6}_{7}_size{8}{9}_th{10}_it{11}_rs{12}_pre{13}".format(
+    return "{0}_{1}_depth{2}_{3}_lr{4}_du{5}_dh{6}_{7}_size{8}{9}_th{10}_it{11}_rs{12}_pre{13}_null-{14}".format(
         args.model_name,
         dim, depth,
         args.optim, args.lr,
@@ -234,7 +233,7 @@ def create_model_id(args):
         sub_model_no,
         args.threshold,
         args.iter,
-        SEED, LOAD
+        SEED, LOAD, args.null_label
     )
 
 
@@ -294,7 +293,8 @@ def create_arg_parser():
                         help='GPU ID for execution')
     parser.add_argument('--tune-word-vec', '-twv', dest='fixed_word_vec', action='store_false',
                         help='do not re-train word vec')
-
+    parser.add_argument('--null_label', dest='null_label', type=str,
+                        help='inc/exclude null label')
     parser.add_argument('--out_dir', type=str, default='result')
 
     parser.set_defaults(fixed_word_vec=True)
@@ -330,9 +330,6 @@ def run():
         #print('BATCH_GENERATOR', e2e_single_seq_sentence_batch)
         word_embedding_matrix = pretrained_word_vecs(args.data_path, "/wordIndex.txt", args.vec_size_e)
 
-        ### load model ###
-        # model = torch.load('./result/model-e2e-stack_ve256_vu256_10_adam_lr0.0002_du0.1_dh0.0_True_size100_sub0.h5')
-        # model.eval()
         model = E2EStackedBiRNN(args.vec_size_u, args.depth, 4, word_embedding_matrix, args.drop_u, args.fixed_word_vec)
 
 
@@ -341,10 +338,9 @@ def run():
     if torch.cuda.is_available():
         model = model.cuda()
         with torch.cuda.device(gpu_id):
-            #print('input: ', args.out_dir, len(data_train), data_train[0], len(data_dev), model, model_id, args.max_epoch, args.lr, args.lr / 20, sep='\n\n', file = open('./input.txt', 'w'))
-            train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter)
+            train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter, args.null_label)
     else:
-        train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter )
+        train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter, args.null_label)
 
 if __name__ == '__main__':
     run()

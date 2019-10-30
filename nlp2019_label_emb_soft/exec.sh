@@ -12,6 +12,7 @@ depth=6
 size=60
 epoch=100
 model_no=1030
+NULL_LABEL="inc" # inc/exc
 
 while getopts g:i:o: OPT
 do
@@ -66,6 +67,7 @@ python src/train_edit.py \
 --epoch ${epoch} \
 --iter 3 \
 --threshold 0.5 \
+--null_label ${NULL_LABEL} \
 | tee -a work/gate.log
 
 MODEL_ID=$(cat work/model_id.txt)
@@ -91,6 +93,7 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python src/test_e2e_arg_model_output_json.py \
 --model_no ${model_no} \
 --iter 3 \
 --threshold 0.5 \
+--null_label ${NULL_LABEL} \
 | tee -a work/gate.log
 fi
 

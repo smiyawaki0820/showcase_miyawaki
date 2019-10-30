@@ -36,7 +36,7 @@ class E2EStackedBiRNN(nn.Module):
         self.label_weight = nn.Linear(dim_out, self.label_dim, bias=False)
 
 
-    def forward(self, x, temp, it, thres):
+    def forward(self, x, temp, it, thres, NULL_LABEL):
         words, is_target = x
         #print("words: ", words.size())
         if torch.cuda.is_available():
@@ -59,7 +59,8 @@ class E2EStackedBiRNN(nn.Module):
             res = []
             for out in outputs:
                 hoge = F.log_softmax(self.output_layer(out))
-                hoge[:,-1] = 0.0
+                if NULL_LABEL == "exc":
+                    hoge[:,-1] = 0.0
                 res.append(F.log_softmax(self.label_weight(hoge)))
             temp = torch.stack(res)
 

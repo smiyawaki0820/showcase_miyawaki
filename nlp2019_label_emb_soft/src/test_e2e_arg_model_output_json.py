@@ -14,7 +14,7 @@ from arg_edit import end2end_dataset, pretrained_word_vecs
 from model_edit import E2EStackedBiRNN
 
 
-def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
+def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num, null_label):
     len_data = len(data)
 
     model.eval()
@@ -35,44 +35,45 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
         if torch.cuda.is_available():
           temp = temp.cuda()
         high_score = {}
-        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
         ### FOR ITER
-        for t in range(iterate_num):
-          
-          if high_score:
-            for b, w in high_score.items():
-              for w_i, l in w.items():
-                temp[b, w_i, :] = l
-          
-          ### SCORE
-          scores = model(xss, temp)
-          for batch_idx, batch in enumerate(scores):
-            batch_high_score = {}
-            for word_idx in range(batch.size(0)):
-              
-              pred = int(torch.argmax(batch[word_idx]))
-              gold = int(yss[batch_idx][0][word_idx])
-              
-              if pred <= 2:
-                ## IF np (pred<=2, gold!=pred)
-                if not gold == pred:
-                  print(t, batch_idx, word_idx, 'np', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
-              
-                ## IF pp
-                else:
-                  print(t, batch_idx, word_idx, 'pp', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
-              ## IF pn (gold<=2, pred=gold)
-              elif pred == 3 and gold <= 2:
-                print(t, batch_idx, word_idx, 'pn', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        scores = model(xss, temp, iterate_num, threshold, null_label)
+        #for t in range(iterate_num):
+        #  
+        #  if high_score:
+        #    for b, w in high_score.items():
+        #      for w_i, l in w.items():
+        #        temp[b, w_i, :] = l
+        #  
+        #  ### SCORE
+        #  scores = model(xss, temp, iterate_num, threshold, null_label)
+        #  for batch_idx, batch in enumerate(scores):
+        #    batch_high_score = {}
+        #    for word_idx in range(batch.size(0)):
+        #      
+        #      pred = int(torch.argmax(batch[word_idx]))
+        #      gold = int(yss[batch_idx][0][word_idx])
+        #      
+        #      if pred <= 2:
+        #        ## IF np (pred<=2, gold!=pred)
+        #        if not gold == pred:
+        #          print(t, batch_idx, word_idx, 'np', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #      
+        #        ## IF pp
+        #        else:
+        #          print(t, batch_idx, word_idx, 'pp', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #      ## IF pn (gold<=2, pred=gold)
+        #      elif pred == 3 and gold <= 2:
+        #        print(t, batch_idx, word_idx, 'pn', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
-              if pred >= math.log(threshold) and pred <= 2:
-                temp[batch_idx, word_idx, :] = batch[word_idx]
-                batch_high_score[word_idx] = batch[word_idx]
-            
-            if not high_score.get(batch_idx):
-              if batch_high_score:
-                high_score[batch_idx] = batch_high_score
+        #      if pred >= math.log(threshold) and pred <= 2:
+        #        temp[batch_idx, word_idx, :] = batch[word_idx]
+        #        batch_high_score[word_idx] = batch[word_idx]
+        #    
+        #    if not high_score.get(batch_idx):
+        #      if batch_high_score:
+        #        high_score[batch_idx] = batch_high_score
 
         for pred_no in range(len(yss)):
             predicted = scores[pred_no].cpu()
@@ -182,6 +183,8 @@ def create_arg_parser():
                         help='dropout rate of LSTM unit')
     parser.add_argument('--no-thres', '-nt', dest='no_thres', action='store_true',
                         help='without thresholds')
+    parser.add_argument('--null_label', dest='null_label', type=str,
+                        help='inc/exclude null label')
 
     parser.add_argument('--out_dir', type=str, default='result')
 
@@ -244,7 +247,6 @@ def run():
     print(args.model_name, model_id)
 
     gpu_id = 0
-    print("gpu:", gpu_id)
 
     torch.manual_seed(args.sub_model_number)
     tag = args.tag
@@ -267,9 +269,9 @@ def run():
     if torch.cuda.is_available():
         model = model.cuda()
         with torch.cuda.device(gpu_id):
-            test(args.out_dir, data, tag, model, model_id, args.thres, args.threshold, args.iter)
+            test(args.out_dir, data, tag, model, model_id, args.thres, args.threshold, args.iter, args.null_label)
     else:
-        test(args.out_dir, data, tag, model, model_id, args.thres, args.threshold, args.iter)
+        test(args.out_dir, data, tag, model, model_id, args.thres, args.threshold, args.iter, args.null_label)
 
 
 if __name__ == '__main__':
