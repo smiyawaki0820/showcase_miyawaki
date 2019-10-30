@@ -65,7 +65,7 @@ python src/train_edit.py \
 --model_no ${model_no} \
 --epoch ${epoch} \
 --iter 3 \
---threshold 0.5 \
+--threshold 0.8 \
 | tee -a work/gate.log
 
 MODEL_ID=$(cat work/model_id.txt)
@@ -90,7 +90,7 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python src/test_e2e_arg_model_output_json.py \
 --dropout-u 0.1 \
 --model_no ${model_no} \
 --iter 3 \
---threshold 0.5 \
+--threshold 0.8 \
 | tee -a work/gate.log
 fi
 

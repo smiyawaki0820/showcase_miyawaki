@@ -1,0 +1,104 @@
+model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse
+gpu: 0
+2 3 2
+vocab size:  29396
+model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse
+gpu: 0
+2 3 2
+vocab size:  29396
+model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse
+gpu: 0
+2 3 2
+vocab size:  29396
+prediction mode: model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse test [0.5, 0.5, 0.5]
+model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse
+gpu: 0
+2 3 2
+vocab size:  29396
+prediction mode: model-e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse test [0.5, 0.5, 0.5]
+{'ga': {'nn': 7424, 'np': 0, 'pn': 18943, 'pp': 0},
+ 'ni': {'nn': 23619, 'np': 0, 'pn': 2748, 'pp': 0},
+ 'o': {'nn': 16069, 'np': 0, 'pn': 10298, 'pp': 0}}
+ga:	prec: 0.0, recall: 0.0, f1: 0.0
+o:	prec: 0.0, recall: 0.0, f1: 0.0
+ni:	prec: 0.0, recall: 0.0, f1: 0.0
+all:	prec: 0.0, recall: 0.0, f1: 0.0
+pred_count_test 26367
+vocab size:  29396
+[34me2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse[0m [33m epoch 1 [0m
+Train...
+loss: tensor(211.3170) lr: 0.0001 time: 17.4
+pred_count_train 737
+
+Test...
+
+ga 	p: 20.56 	r: 18.49 	f1: 19.47 	 22 	 107 	 119
+wo 	p: 0.0 	r: 0.0 	f1: 0.0 	 0 	 0 	 71
+ni 	p: 1.75 	r: 3.85 	f1: 2.41 	 1 	 57 	 26
+dev_num_of_high:  0
+best_thres [0.1, 0.2, 0.04]
+f 0.12105263157894737
+save model
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	current best epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	best in epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+vocab size:  29396
+[34me2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse[0m [33m epoch 1 [0m
+Train...
+loss: tensor(211.3170) lr: 0.0001 time: 16.59
+pred_count_train 737
+
+Test...
+
+ga 	p: 20.56 	r: 18.49 	f1: 19.47 	 22 	 107 	 119
+wo 	p: 0.0 	r: 0.0 	f1: 0.0 	 0 	 0 	 71
+ni 	p: 1.75 	r: 3.85 	f1: 2.41 	 1 	 57 	 26
+dev_num_of_high:  0
+best_thres [0.1, 0.2, 0.04]
+f 0.12105263157894737
+save model
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	current best epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	best in epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+vocab size:  29396
+[34me2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse[0m [33m epoch 1 [0m
+Train...
+loss: tensor(211.3170) lr: 0.0001 time: 16.92
+pred_count_train 737
+
+Test...
+
+ga 	p: 20.56 	r: 18.49 	f1: 19.47 	 22 	 107 	 119
+wo 	p: 0.0 	r: 0.0 	f1: 0.0 	 0 	 0 	 71
+ni 	p: 1.75 	r: 3.85 	f1: 2.41 	 1 	 57 	 26
+dev_num_of_high:  0
+best_thres [0.1, 0.2, 0.04]
+f 0.12105263157894737
+save model
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	current best epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	best in epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+vocab size:  29396
+[34me2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse[0m [33m epoch 1 [0m
+Train...
+loss: tensor(211.3170) lr: 0.0001 time: 16.44
+pred_count_train 737
+
+Test...
+
+ga 	p: 20.56 	r: 18.49 	f1: 19.47 	 22 	 107 	 119
+wo 	p: 0.0 	r: 0.0 	f1: 0.0 	 0 	 0 	 71
+ni 	p: 1.75 	r: 3.85 	f1: 2.41 	 1 	 57 	 26
+dev_num_of_high:  0
+best_thres [0.1, 0.2, 0.04]
+f 0.12105263157894737
+save model
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	current best epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+e2e-stack_ve256_vu256_depth2_adam_lr0.0001_du0.1_dh0.0_True_size1_sub1029_th0.8_it3_rs2016_preFalse 	best in epoch 1 	 [0.1, 0.2, 0.04] 	 lr: 0.0001 	 f: 12.105263157894736
+vocab size:  29396
+[34me2e-stack_ve256_vu256_depth6_adam_lr0.0001_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse[0m [33m epoch 1 [0m
+Train...
+vocab size:  29396
+[34me2e-stack_ve256_vu256_depth6_adam_lr0.0001_du0.1_dh0.0_True_size60_sub1030_th0.5_it3_rs2016_preFalse[0m [33m epoch 1 [0m
+Train...

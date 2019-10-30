@@ -35,7 +35,7 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
         if torch.cuda.is_available():
           temp = temp.cuda()
         high_score = {}
-        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result/predict/test_'+model_id+'_test-judge.txt', 'a'))
 
         ### FOR ITER
         scores = model(xss, temp, iterate_num, threshold)

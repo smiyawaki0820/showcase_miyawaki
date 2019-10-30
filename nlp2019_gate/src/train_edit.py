@@ -51,20 +51,20 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
     if LOAD:
       LOAD_PATH = "model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th0.8_it3_rs2016_preFalse.h5"
       '''
-      if os.path.exists('./result_new/model-' + model_id + '.h5'):
+      if os.path.exists('./result/model-' + model_id + '.h5'):
           model.load_state_dict(torch.load("./result/model-" + model_id + '.h5'))
       '''
-      if os.path.exists('./result_new/edit/' + LOAD_PATH):
-          model.load_state_dict(torch.load("./result_new/edit/" + LOAD_PATH))
+      if os.path.exists('./result/edit/' + LOAD_PATH):
+          model.load_state_dict(torch.load("./result/edit/" + LOAD_PATH))
           print('LOAD: ', "\033[34m" + str(LOAD_PATH) + "\033[0m")
 
 
     header = ['','p', 'r', 'f1', 'p_p', 'ppnp', 'pppn']
-    with open('./result_new/edit/log/model-' + model_id + '.csv', 'a') as csv_f:
+    with open('./result/edit/log/model-' + model_id + '.csv', 'a') as csv_f:
         writer = csv.writer(csv_f, delimiter='\t')
         writer.writerow(header)
         writer.writerow([])
-    print('\n\n', file=open('./result_new/edit/log/model-'+model_id+'_loss.txt', 'a'))
+    print('\n\n', file=open('./result/edit/log/model-'+model_id+'_loss.txt', 'a'))
 
 
     loss_function = nn.NLLLoss()
@@ -84,7 +84,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         start_time = time.time() 
         total_loss = torch.Tensor([0])
         early_stopping_count += 1
-        print("### ", ep, " ###", file=open('./result_new/edit/hoge/'+model_id+'_WRjudge.txt', 'a'))
+        print("### ", ep, " ###", file=open('./result/edit/hoge/'+model_id+'_WRjudge.txt', 'a'))
         print("\033[34m"+model_id+"\033[0m", '\033[33m epoch {0} \033[0m'.format(ep + 1), flush=True)
 
         # swap
@@ -136,7 +136,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
            count += 1
 
         print("loss:", total_loss[0], "lr:", lr, "time:", round(time.time()-start_time,2))
-        print(str(float(total_loss[0])), file=open('./result_new/edit/log/model-'+model_id+'_loss.txt', 'a'))
+        print(str(float(total_loss[0])), file=open('./result/edit/log/model-'+model_id+'_loss.txt', 'a'))
         losses.append(total_loss)
         print("pred_count_train", pred_count_train)
         print("", flush=True)
