@@ -1,0 +1,23 @@
+model-.h5
+e2e-stack model-
+gpu: 0
+6 3 2
+vocab size:  29396
+vocab size:  29396
+model-e2e-stack_ve256_vu256_depth6_adam_lr0.0002_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth6_adam_lr0.0002_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse
+gpu: 0
+6 3 2
+vocab size:  29396
+vocab size:  29396
+model-e2e-stack_ve256_vu256_depth6_adam_lr0.0005_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth6_adam_lr0.0005_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse
+gpu: 0
+6 3 2
+vocab size:  29396
+vocab size:  29396
+model-e2e-stack_ve256_vu256_depth6_adam_lr0.001_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse.h5
+e2e-stack model-e2e-stack_ve256_vu256_depth6_adam_lr0.001_du0.1_dh0.0_True_size60_sub1030_th0.8_it3_rs2016_preFalse
+gpu: 0
+6 3 2
+vocab size:  29396
