@@ -14,3 +14,14 @@ loss: tensor(3884.7144) lr: 0.0001 time: 524.82
 pred_count_train 41644
 
 Test...
+
+ga 	p: 74.17 	r: 67.07 	f1: 70.44 	 4137 	 5578 	 6168
+wo 	p: 90.9 	r: 80.81 	f1: 85.56 	 2738 	 3012 	 3388
+ni 	p: 82.25 	r: 73.06 	f1: 77.38 	 1112 	 1352 	 1522
+dev_num_of_high:  0
+best_thres [0.59, 0.22, 0.21]
+f 0.759942911512845
+save model
+e2e-stack_ve256_vu256_depth6_adam_lr0.0001_du0.1_dh0.0_True_size60_sub1030_th0.5_it3_rs2016_preFalse_null-inc 	current best epoch 1 	 [0.59, 0.22, 0.21] 	 lr: 0.0001 	 f: 75.9942911512845
+e2e-stack_ve256_vu256_depth6_adam_lr0.0001_du0.1_dh0.0_True_size60_sub1030_th0.5_it3_rs2016_preFalse_null-inc epoch 2
+Train...
