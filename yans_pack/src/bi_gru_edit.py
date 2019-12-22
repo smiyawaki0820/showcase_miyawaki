@@ -26,7 +26,6 @@ class BiGRUForSRL(nn.Module):
         self.grus = nn.ModuleList([nn.GRU(dim_u, dim_u, num_layers=1, batch_first=True) for _ in range(num_layers - 1)])
 
     # x = input
-    @profile
     def forward(self, x, iter_num):
         if torch.cuda.is_available():
             x = x.cuda()

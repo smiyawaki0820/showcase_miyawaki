@@ -78,6 +78,8 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         data_train.create_batches()
         #random.shuffle(data_train)
         pred_count_train = 0
+        arg_count_train = 0
+        sent_count = 0
         count = 0
         dic_file = {}
 
@@ -87,6 +89,10 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
 
             if xss[0].size(1) > max_sentence_length:
                 continue
+
+            pred_count_train += xss[0].size(0)
+            for t in yss:
+                arg_count_train += int(torch.sum(t > 0))
 
             optimizer.zero_grad()   # 勾配初期化
             model.zero_grad()
@@ -102,6 +108,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
                 temp = torch.stack([i for i in init_vec])
             else:
                 temp = torch.tensor([])
+            
 
             scores, _ = model(xss, temp)     # list[score_0, score_1, ...]
 
@@ -131,7 +138,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         print("loss:", total_loss[0], "lr:", lr, "time:", round(time.time()-start_time,2))
         print(str(float(total_loss[0])), file=open('./result/edit/log/model-'+model_id+'_loss.txt', 'a'))
         losses_total.append(total_loss)
-        print("pred_count_train", pred_count_train)
+        print("pred_count_train: {}\targs_count_train: {}".format(pred_count_train, arg_count_train), file=open("experiment_settings.txt", "a"), end="\n")
 
         print('Test...', flush=True)
 

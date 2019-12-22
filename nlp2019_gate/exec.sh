@@ -4,14 +4,14 @@ USAGE="Usage: bash train.sh -g [GPU_ID] -i [IN_DIR] -o [OUT_DIR]"
 
 ### parameter ###
 TRAIN=true
-TEST=true
+TEST=false
 INFORM=true
 SAVE=true
-LRate=(0.0001 0.0002 0.0005 0.001)
+LRate=(0.0002 0.0001)
 depth=6
 size=60
 epoch=100
-model_no=1030
+model_no=1118
 
 while getopts g:i:o: OPT
 do
@@ -43,14 +43,16 @@ done
 ### python ###
 for lr in ${LRate[@]}
 do
-
+for i in 2
+do
+iter=3
+TH=`echo "scale=2; ${i} / 10.0" | bc`
 ### logging date ###
 read s Y m d H M S ms ns <<< "$(date +'%s %Y %m %d %H %M %S %3N %9N')"
 echo $Y.$m.$d $H:$M:$S >> gate.log
 
 ### train ###
 if ${TRAIN}; then
-TH=`echo "scale=2; ${i} / 10.0" | bc`
 CUDA_VISIBLE_DEVICES=${GPU_ID} \
 python src/train_edit.py \
 --data ${IN_DIR} \
@@ -64,8 +66,8 @@ python src/train_edit.py \
 --size ${size} \
 --model_no ${model_no} \
 --epoch ${epoch} \
---iter 3 \
---threshold 0.5 \
+--iter ${iter} \
+--threshold ${TH} \
 | tee -a work/gate.log
 
 MODEL_ID=$(cat work/model_id.txt)
@@ -76,12 +78,15 @@ fi
 ### test ###
 if ${TEST}; then
 THRES="0.5 0.5 0.5"
-
+for FILE in result/edit/*depth${depth}*lr${lr}*size60*th0.${i}*it3*.h5
+do
+if [ -f ${FILE} ]; then
+echo ${FILE}
 CUDA_VISIBLE_DEVICES=${GPU_ID} python src/test_e2e_arg_model_output_json.py \
 --data ${IN_DIR} \
---tag test \
+--tag "dev" \
 --model e2e-stack \
---model-file ${MODEL_FILE} \
+--model-file ${FILE} \
 --thres ${THRES} \
 --vec_u 256 \
 --depth ${depth} \
@@ -89,9 +94,11 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python src/test_e2e_arg_model_output_json.py \
 --lr ${lr} \
 --dropout-u 0.1 \
 --model_no ${model_no} \
---iter 3 \
---threshold 0.5 \
+--iter ${iter} \
+--threshold ${TH} \
 | tee -a work/gate.log
+fi
+done
 fi
 
 ### inform ###
@@ -103,12 +110,12 @@ if ${INFORM}; then
     mes="finish gate"#\n ${HOST}"
   fi
   echo ${HOST}
-  data='{"text":"finish_gate:'"${HOST}"'"}'
+  data='{"text":"finish_gate:'"${HOST}"':'"${MODEL_FILE}"'"}'
   curl -X POST -H 'Content-type: application/json' --data ${data} https://hooks.slack.com/services/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
 fi
 
 done
-
+done
 ### confirm save ###
 function ConfirmSave() {
 

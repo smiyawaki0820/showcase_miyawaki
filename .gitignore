@@ -1,0 +1,13 @@
+gspread
+label_tell_error
+nlp2019_gate
+nlp2019_label_emb
+nlp2019_lsoft
+nlp2019_top_layer
+yans
+yans2019
+yans_pack/result/
+yans_pack/work/
+yans_pack/result_temp
+yans_pack/log
+test/

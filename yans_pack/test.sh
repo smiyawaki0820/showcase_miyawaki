@@ -25,15 +25,15 @@ depth=6
 LRate=(0.002)
 size=60
 sub=1127
-IT=(3)
+IT=(1)
 echo -e "\e[32mpre\e[m"
 read pre
 echo -e "\e[32mloss\e[m"
 read loss
-save=true
+save=false
 save_json="True"
 rs=
-null=("inc" "exc")
+null=("inc")
 
 for it in ${IT[@]}
 do
@@ -53,11 +53,11 @@ do
 for lr in ${LRate[@]}
 do
 
-for th in 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+for th in 0.0 # 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
 do
 for n in ${null[@]}
 do
-for FILE in result/edit/model*new*e2e*depth${depth}*lr${lr}*size${size}*sub${sub}*th${th}*it${it}*rs${rs}*pre${pre}*loss-${loss}*null-${n}*
+for FILE in result/edit/model*lr0.002*th0.0*it1*preFalse*last*.h5 # result/edit/model*new*e2e*depth${depth}*lr${lr}*size${size}*sub${sub}*th${th}*it${it}*rs${rs}*pre${pre}*loss-${loss}*null-${n}*
 do
 if [ -f ${FILE} ] ; then
 

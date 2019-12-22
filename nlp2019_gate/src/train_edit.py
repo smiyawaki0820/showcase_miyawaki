@@ -18,12 +18,10 @@ from arg_edit import *
 from model_edit import E2EStackedBiRNN
 
 LOAD = False
-SEED = 2016
-random.seed(SEED)
+ANALYZE = True
 
 import numpy as np
 
-np.random.seed(SEED)
 
 from eval_edit import evaluate_multiclass_without_none
 
@@ -103,37 +101,37 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
         model.train()
         for xss, yss, sent_id, file_name in tqdm(data_train, total=len_train, mininterval=5):
 
-           if yss.size(1) > max_sentence_length:
+            if yss.size(1) > max_sentence_length:
                 continue
 
-           optimizer.zero_grad()
-           model.zero_grad()
+            optimizer.zero_grad()
+            model.zero_grad()
 
-           if torch.cuda.is_available():
-               yss = autograd.Variable(yss).cuda()
-           else:
+            if torch.cuda.is_available():
+                yss = autograd.Variable(yss).cuda()
+            else:
                 yss = autograd.Variable(yss)
-           
-           pred_count_train += yss.size()[0]
-            
-           temp = torch.zeros(yss.size()[0], yss.size()[1], 4)
-           if torch.cuda.is_available():
-              temp = temp.cuda()
-           
-           ### iterate in epoch ###
-           high_score = {}
-           scores = model(xss, temp, iterate_num, threshold)
-           
-           count += 1
 
-           loss = 0
-           for i in range(yss.size()[0]):
-               loss += loss_function(scores[i], yss[i])
-           loss.backward()
-           torch.nn.utils.clip_grad_norm(model.parameters(), 1.0)
-           optimizer.step()
-           total_loss += loss.data.cpu()
-           count += 1
+            pred_count_train += yss.size()[0]
+
+            temp = torch.zeros(yss.size()[0], yss.size()[1], 4)
+            if torch.cuda.is_available():
+                temp = temp.cuda()
+
+            ### iterate in epoch ###
+            high_score = {}
+            scores = model(xss, yss, temp, iterate_num, threshold)[iterate_num-1]
+
+            count += 1
+
+            loss = 0
+            for i in range(yss.size()[0]):
+                loss += loss_function(scores[i], yss[i])
+            loss.backward()
+            torch.nn.utils.clip_grad_norm(model.parameters(), 1.0)
+            optimizer.step()
+            total_loss += loss.data.cpu()
+            count += 1
 
         print("loss:", total_loss[0], "lr:", lr, "time:", round(time.time()-start_time,2))
         print(str(float(total_loss[0])), file=open('./result/edit/log/model-'+model_id+'_loss.txt', 'a'))
@@ -171,6 +169,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
 
     print(model_id, "\tbest in epoch", best_epoch, "\t", best_thres, "\t", "lr:", best_lr, "\t",
           "f:", best_performance)
+    return {model_id: {"best_epoch":best_epoch, "best_thres":best_thres, "best_lr":best_lr, "best_performance":best_performance}}
 
 
 def set_log_file(args, tag, model_id):
@@ -207,7 +206,7 @@ def create_model_id(args):
     depth = args.depth
     dim = 've{0}_vu{0}'.format(args.vec_size_u)
 
-    return "{0}_{1}_depth{2}_{3}_lr{4}_du{5}_dh{6}_{7}_size{8}{9}_th{10}_it{11}_rs{12}_pre{13}".format(
+    return "GATE_{0}_{1}_depth{2}_{3}_lr{4}_du{5}_dh{6}_{7}_size{8}{9}_th{10}_it{11}_rs{12}_pre{13}".format(
         args.model_name,
         dim, depth,
         args.optim, args.lr,
@@ -318,10 +317,23 @@ def run():
     if torch.cuda.is_available():
         model = model.cuda()
         with torch.cuda.device(gpu_id):
-            train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter)
+            result = train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter)
     else:
-        train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter )
+        result = train(args.out_dir, data_train, data_dev, model, model_id, args.max_epoch, args.lr, args.lr / 20, args.threshold, args.iter )
+
+    return result
 
 
 if __name__ == '__main__':
-    run()
+
+    res_list = []
+    SEEDS = (2016, 2018, 2020)
+    for SEED in SEEDS:
+        random.seed(SEED)
+        np.random.seed(SEED)
+        result = run()
+        res_list.append(result)
+
+    for SEED, res in zip(SEEDS, res_list):
+        print(SEED, res)
+

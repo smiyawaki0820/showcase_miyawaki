@@ -24,6 +24,10 @@ def evaluate_multiclass_without_none(model, data_test, len_test,
     dic_file = {}
     dic_loc = {}
     model.eval()
+
+    pred_count_dev = 0
+    arg_count_dev = 0
+
     for xss, yss in tqdm(data_test, total=len_test, mininterval=5):
 
         #temp_pred = torch.zeros(yss.size()[0] ,yss.size()[1], 1)
@@ -35,6 +39,11 @@ def evaluate_multiclass_without_none(model, data_test, len_test,
         if xss[0].size(1) > max_sentence_length:
             continue
         num_test_instance += 1
+
+        pred_count_dev += xss[0].size(0)
+        import ipdb; ipdb.set_trace()
+        for t in yss:
+            arg_count_dev += int(torch.sum(t > 0))
 
         ### iterate in epoch ###
         if base:
@@ -63,7 +72,7 @@ def evaluate_multiclass_without_none(model, data_test, len_test,
 
 
     best_thres, f = calc_best_thres(best_result, results, thres_lists, labels, model_id)
-    print('dev_num_of_high: ', dev_num_of_high)
+    print("pred_count_dev:{}\targ_count_dev:{}".format(pred_count_dev, arg_count_dev), file=open("experiment_settings.txt","a"), end="\n")
     print('best_thres', best_thres)
     print('f', f)
 

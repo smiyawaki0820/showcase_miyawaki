@@ -1,6 +1,10 @@
-#!/usr/bin/env bash
 
 USAGE="Usage: bash test.sh -g [GPU_ID] -i [IN_DIR] -o [OUT_DIR]"
+
+#LRate=(0.0001 0.0002 0.0005 0.001)
+LRate=0.0002
+thresholds=(0.8)
+
 
 while getopts g:i:o: OPT
 do
@@ -20,56 +24,42 @@ elif test "${FLG_O}" != "TRUE"; then
     OUT_DIR="result"
 fi
 
-#MODEL_FILE="model-e2e-stack_ve256_vu256_10_adam_lr0.0002_du0.1_dh0.0_True_size100_sub0.h5"
-#LOG_FILE="log-train-e2e-stack_ve256_vu256_10_adam_lr0.0002_du0.1_dh0.0_True_size100_sub0.txt"
-#THRES=`tail "${OUT_DIR}/log/${LOG_FILE}" | grep -o "best in epoch .*]" | grep -o "\[.*\]" | grep -o "[0-9.]*" | tr '\n' ' '`
 
-#cp ./result/edit/hoge/e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_* ${OUT_DIR}/hoge/
-#
-#cp ./result/edit/log/model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_* ${OUT_DIR}/log/
-
-cp ./result_new/edit/model-* ${OUT_DIR}/
-
-
-#MODEL_FILE="~/Club-IMI-taiwa-2019/out_epoch/result_new/edit/model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub0_th0.8_it3_rs2018_preFalse.h5"
-THRES="0.5 0.5 0.5"
-
-
-for i in 0 1 2 5 10
+for th in ${thresholds[@]}
+do
+for lr in ${LRate[@]}
 do
 
-TH=`echo "scale=1; ${i} / 10.0" | bc`
+# model-e2e-stack_ve256_vu256_depth6_adam_lr0.0002_du0.1_dh0.0_True_size60_sub1118_th0.8_it3_rs2020_preFalse_cacheFalse.h5
+for FILE in result/edit/*depth6*lr${lr}*size60*sub1118*th${th}*cacheTrue.h5
+do
+if [ -f ${FILE} ] ; then
+echo $FILE
+THRES="0.5 0.5 0.5"
 
-if [ ${TH} = 0 ]; then
-  MODEL_FILE="/model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th0.${TH}_it3_rs2016_preFalse.h5"
-  MODEL_result="Club-IMI-taiwa-2019/out_epoch/result/edit/predict-test-model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th0.${TH}_it3_rs2016_preFalse-0.5-0.5-0.5.txt"
-elif [ ${TH} = 1.0 ]; then
-  MODEL_FILE="/model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th${TH}_it3_rs2016_preFalse.h5"
-  MODEL_result="Club-IMI-taiwa-2019/out_epoch/result/edit/predict-test-model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th${TH}_it3_rs2016_preFalse-0.5-0.5-0.5.txt"
-else
-  MODEL_FILE="/model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th0${TH}_it3_rs2016_preFalse.h5"
-  MODEL_result="Club-IMI-taiwa-2019/out_epoch/result/edit/predict-test-model-e2e-stack_ve256_vu256_depth10_adam_lr0.0001_du0.1_dh0.0_True_size100_sub1_th0${TH}_it3_rs2016_preFalse-0.5-0.5-0.5.txt"
-fi
-
+for ITER in 1 2 3
+do
 CUDA_VISIBLE_DEVICES=${GPU_ID} python src/test_e2e_arg_model_output_json.py \
 --data ${IN_DIR} \
---tag test \
+--tag "dev" \
 --model e2e-stack \
---model-file "${OUT_DIR}/${MODEL_FILE}" \
+--model-file ${FILE} \
 --thres ${THRES} \
 --vec_u 256 \
---depth 10 \
+--depth 6 \
 --optimizer adam \
---lr 0.0001 \
+--lr ${lr} \
 --dropout-u 0.1 \
---model_no 1 \
---iter 3 \
---threshold ${TH}
-
-curl -X POST -H 'Content-type: application/json' --data '{"text":"test_finish"}' https://hooks.slack.com/services/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
-
-cp ${MODEL_result} ${OUT_DIR}/hoge/predict/${TH}.json
-
+--model_no 1118 \
+--iter ${ITER} \
+--cache "False" \
+--threshold ${th}
+done
+fi
+done
+done
 done
 
-cd ~/Club-IMI-taiwa-2019/out_epoch/result_new/edit/hoge
+curl -X POST -H 'Content-type: application/json' --data '{"text":"yans_test_finish"}' https://hooks.slack.com/services/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
+
+

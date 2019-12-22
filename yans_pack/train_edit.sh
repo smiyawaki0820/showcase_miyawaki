@@ -26,11 +26,11 @@ loss_type="sum" # sum or last
 ITER=(3)
 depth=6
 size=60
-model_no=1127
+model_no=0
 batch_size=512
 lr=(0.002)
 load="False"
-null="exc"
+null=("inc" "exc")
 free="new"
 
 rm result/edit/log/*sub0*
@@ -62,7 +62,7 @@ python src/train_edit.py \
 --null_label ${null} \
 --loss ${loss_type}
 else
-for TH in 0.8 0.2 0.3 0.5 0.0
+for TH in 0.0 0.99 0.95
 do
 CUDA_VISIBLE_DEVICES=${GPU_ID} \
 python src/train_edit.py \

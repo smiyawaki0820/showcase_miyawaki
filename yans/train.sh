@@ -23,7 +23,9 @@ fi
 INFORM=true
 # rm ./work/hoge.txt
 
-for i in 5 9 1 6 2
+for lr in 0.0001
+do
+for i in 8
 do
 TH=`echo "scale=2; ${i} / 10.0" | bc`
 CUDA_VISIBLE_DEVICES=${GPU_ID} \
@@ -32,18 +34,19 @@ python src/train_edit.py \
 --out_dir ${OUT_DIR} \
 --model e2e-stack \
 --vec_u 256 \
---depth 10 \
+--depth 6 \
 --optimizer adam \
---lr 0.0001 \
+--lr ${lr} \
 --dropout-u 0.1 \
---size 10 \
---model_no 1028 \
---epoch 100 \
---iter 3 \
+--size 1 \
+--model_no 0 \
+--epoch 1 \
+--iter 2 \
+--cache "False" \
 --threshold ${TH}
 done
-
+done
 if ${INFORM}; then
-  curl -X POST -H 'Content-type: application/json' --data '{"text":"finish layer iteration"}' https://hooks.slack.com/services/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
+  curl -X POST -H 'Content-type: application/json' --data '{"text":"finish yans"}' https://hooks.slack.com/services/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
 fi
 

@@ -51,6 +51,7 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num, arg
 
     labels = ["ga", "o", "ni"]
     result = {label: {"pp": 0, "np": 0, "pn": 0, "nn": 0} for label in labels}
+    prob = {thres/100: {label: {"pp":0, "np":0, "pn":0} for label in labels} for thres in range(101)}
     conf_mat = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     pass_num = [0,0,0]
 
@@ -76,6 +77,7 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num, arg
         for pred_no in range(len(yss)):
             predicted = scores[pred_no].cpu()
             predicted = torch.pow(torch.zeros(predicted.size()) + math.e, predicted.data)
+            import ipdb; ipdb.set_trace()
 
             #ys, p_id = yss[pred_no]
             ys, p_id, sent_id, file_name = yss[pred_no]
@@ -97,19 +99,26 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num, arg
                 if label_idx not in ys:
                     if max_score < 0:
                         result[label]["nn"] += 1
+                        #prob[round(max_score,2)][label]["nn"] += 1  # error
                     else:
                         result[label]["np"] += 1
+                        prob[round(float(max_score), 2)][label]["np"] += 1
                         conf_mat[3][label_idx] += 1
                 elif max_score >= 0:
                     conf_mat[label_idx][ys[max_idx]] += 1
                     if ys[max_idx] == label_idx:
                         result[label]["pp"] += 1
+                        prob[round(float(max_score),2)][label]["pp"] += 1
                     else:
                         result[label]["np"] += 1
                         result[label]["pn"] += 1
+                        prob[round(float(max_score),2)][label]["np"] += 1
+                        prob[round(float(max_score),2)][label]["pn"] += 1
                 else:
                     conf_mat[3][ys[max_idx]] +=1
                     result[label]["pn"] += 1
+                    # prob[round(float(max_score),2)][label]["pn"] += 1
+
 
             if return_bool(args.save_json):
                 out_dict = json.dumps(out_dict)
@@ -128,6 +137,8 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num, arg
     kaku = ["ga", "o", "ni", "null"]
     print("confusion matrix\n", pd.DataFrame(np.array(conf_mat).transpose(), columns=kaku, index=kaku))
 
+    with open("result/base_prob_dist.json", "w") as js:
+        json.dump(prob, js, indent=2)
 
 def create_arg_parser():
     parser = argparse.ArgumentParser(description='Process some integers.')

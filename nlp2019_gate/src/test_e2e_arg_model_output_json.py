@@ -20,7 +20,7 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
     model.eval()
 
     print('prediction mode:', model_id, tag, thres)
-    file = open(out_dir + "/predict-" + tag + '-' + model_id + "-{0}".format("-".join(map(str, thres))) + ".txt", "w")
+    file = open(out_dir + "/predict-" + tag + '-' + model_id + "-{0}".format("-".join(map(str, thres))) + "iter_" + str(iterate_num) + ".json", "w")
 
     labels = ["ga", "o", "ni"]
     result = {label: {"pp": 0, "np": 0, "pn": 0, "nn": 0} for label in labels}
@@ -35,10 +35,11 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
         if torch.cuda.is_available():
           temp = temp.cuda()
         high_score = {}
-        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
         ### FOR ITER
-        scores = model(xss, temp, iterate_num, threshold)
+        scores = model(xss, yss, temp, iterate_num, threshold)
+        scores = scores[-1]
         #for t in range(iterate_num):
 
         #  if high_score:
@@ -58,14 +59,14 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
         #      if pred <= 2:
         #        ## IF np (pred<=2, gold!=pred)
         #        if not gold == pred:
-        #          print(t, batch_idx, word_idx, 'np', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #          print(t, batch_idx, word_idx, 'np', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
         #        ## IF pp
         #        else:
-        #          print(t, batch_idx, word_idx, 'pp', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #          print(t, batch_idx, word_idx, 'pp', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
         #      ## IF pn (gold<=2, pred=gold)
         #      elif pred == 3 and gold <= 2:
-        #        print(t, batch_idx, word_idx, 'pn', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #        print(t, batch_idx, word_idx, 'pn', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
         #      if pred >= math.log(threshold) and pred <= 2:
         #        temp[batch_idx, word_idx, :] = batch[word_idx]
@@ -129,7 +130,7 @@ def create_arg_parser():
     parser.add_argument('--model-file', '-mf', dest='model_file', type=str,
                         help='model file path')
     parser.add_argument('--tag', '-t', dest='tag', type=str,
-                        default="dev",
+                        default="test",
                         help='type of evaluation data split')
     parser.add_argument('--eval-ensemble', '-ee', dest='eval_ensemble', type=bool,
                         default=False,
@@ -247,6 +248,7 @@ def run():
     gpu_id = 0
     print("gpu:", gpu_id)
 
+    print("############", args.data_path + "/{}.json".format(args.tag), flush=True)
     torch.manual_seed(args.sub_model_number)
     tag = args.tag
     # set_log_file(args, tag, model_id)
