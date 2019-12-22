@@ -8,7 +8,7 @@ import ipdb
 from pytorch_memlab import profile
 
 max_sentence_length = 90
-
+ANALYZE = True
 
 class E2EStackedBiRNN(nn.Module):
     def __init__(self, dim_u: int, depth: int,
@@ -33,7 +33,7 @@ class E2EStackedBiRNN(nn.Module):
         self.output_layer = nn.Linear(dim_u, dim_out)
 
     #@profile
-    def forward(self, x, temp, it, thres):
+    def forward(self, x, yss, temp, it, thres):
         words, is_target = x
         if torch.cuda.is_available():
             words = autograd.Variable(words).cuda()
@@ -46,27 +46,22 @@ class E2EStackedBiRNN(nn.Module):
         each_layer_in = [torch.zeros([words.size()[0], words.size()[1], self.hidden_dim]) for _ in range(self.depth)]
 
         # Iter 部分
+        scores = []
         for t in range(it):
-            if torch.cuda.is_available():
-                temp = autograd.Variable(temp).cuda()
-            else:
-                temp = autograd.Variable(temp)
             inputs = torch.cat([embeds, is_target, temp], dim=2)
             outputs, each_layer_in = self.gru(inputs, each_layer_in, t) # ここで hidden_list を受け取る
-            res = [F.log_softmax(self.output_layer(out)) for out in outputs]
-            temp = torch.zeros(words.size()[0], words.size()[1], 4)
-            temp = self.filtering(res, temp, thres)
+            res = [F.softmax(self.output_layer(out)) for out in outputs]
+            scores.append([F.log_softmax(self.output_layer(out)) for out in outputs])
+            #temp = self.filtering(res, temp, thres)
+            temp = torch.stack([r * (r > thres).float() for r in res])
+            temp[:,:,-1] = 0
+        return scores
 
-        #if data_num >= 100:
-        #    ipdb.set_trace()
-
-        return res
-
-    def filtering(self, res, temp, thres):
-        for batch_idx, batch in enumerate(res):
-            batch_high_score = {}
-            for word_idx in range(batch.size(0)):
-                if torch.max(batch[word_idx]) >= math.log(thres) and torch.argmax(batch[word_idx]) <= 2:
-                    batch_high_score[word_idx] = batch[word_idx]
-                    temp[batch_idx, word_idx, :] = batch[word_idx]
-        return temp
+    #def filtering(self, res, temp, thres):
+    #    for batch_idx, batch in enumerate(res):
+    #        batch_high_score = {}
+    #        for word_idx in range(batch.size(0)):
+    #            if torch.max(batch[word_idx]) >= math.log(thres) and torch.argmax(batch[word_idx]) <= 2:
+    #                batch_high_score[word_idx] = batch[word_idx]
+    #                temp[batch_idx, word_idx, :] = batch[word_idx]
+    #    return temp

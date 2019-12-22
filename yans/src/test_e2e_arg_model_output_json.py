@@ -13,6 +13,8 @@ from arg_edit import *
 from arg_edit import end2end_dataset, pretrained_word_vecs
 from model_edit import E2EStackedBiRNN
 
+import ipdb
+
 
 def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
     len_data = len(data)
@@ -20,7 +22,7 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
     model.eval()
 
     print('prediction mode:', model_id, tag, thres)
-    file = open(out_dir + "/predict-" + tag + '-' + model_id + "-{0}".format("-".join(map(str, thres))) + ".txt", "w")
+    file = open(out_dir + "/predict-" + tag + '-' + model_id + "-{0}".format("-".join(map(str, thres))) + "iter_" + str(iterate_num) + ".json", "w")
 
     labels = ["ga", "o", "ni"]
     result = {label: {"pp": 0, "np": 0, "pn": 0, "nn": 0} for label in labels}
@@ -35,49 +37,51 @@ def test(out_dir, data, tag, model, model_id, thres, threshold, iterate_num):
         if torch.cuda.is_available():
           temp = temp.cuda()
         high_score = {}
-        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        print(file_name[0], sent_id[0], sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
         ### FOR ITER
-        for t in range(iterate_num):
-          
-          if high_score:
-            for b, w in high_score.items():
-              for w_i, l in w.items():
-                temp[b, w_i, :] = l
-          
-          ### SCORE
-          scores = model(xss, temp)
-          for batch_idx, batch in enumerate(scores):
-            batch_high_score = {}
-            for word_idx in range(batch.size(0)):
-              
-              pred = int(torch.argmax(batch[word_idx]))
-              gold = int(yss[batch_idx][0][word_idx])
-              
-              if pred <= 2:
-                ## IF np (pred<=2, gold!=pred)
-                if not gold == pred:
-                  print(t, batch_idx, word_idx, 'np', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
-              
-                ## IF pp
-                else:
-                  print(t, batch_idx, word_idx, 'pp', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
-              ## IF pn (gold<=2, pred=gold)
-              elif pred == 3 and gold <= 2:
-                print(t, batch_idx, word_idx, 'pn', pred, gold, sep=' ', end='\n', file=open('./result_new/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        scores = model(xss, temp, iterate_num, threshold)
+        #for t in range(iterate_num):
+        #  
+        #  if high_score:
+        #    for b, w in high_score.items():
+        #      for w_i, l in w.items():
+        #        temp[b, w_i, :] = l
+        #  
+        #  ### SCORE
+        #  scores = model(xss, temp)
+        #  for batch_idx, batch in enumerate(scores):
+        #    batch_high_score = {}
+        #    for word_idx in range(batch.size(0)):
+        #      
+        #      pred = int(torch.argmax(batch[word_idx]))
+        #      gold = int(yss[batch_idx][0][word_idx])
+        #      
+        #      if pred <= 2:
+        #        ## IF np (pred<=2, gold!=pred)
+        #        if not gold == pred:
+        #          print(t, batch_idx, word_idx, 'np', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #      
+        #        ## IF pp
+        #        else:
+        #          print(t, batch_idx, word_idx, 'pp', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
+        #      ## IF pn (gold<=2, pred=gold)
+        #      elif pred == 3 and gold <= 2:
+        #        print(t, batch_idx, word_idx, 'pn', pred, gold, sep=' ', end='\n', file=open('./result/edit/hoge/test_'+model_id+'_test-judge.txt', 'a'))
 
-              if pred >= math.log(threshold) and pred <= 2:
-                temp[batch_idx, word_idx, :] = batch[word_idx]
-                batch_high_score[word_idx] = batch[word_idx]
-            
-            if not high_score.get(batch_idx):
-              if batch_high_score:
-                high_score[batch_idx] = batch_high_score
+        #      if pred >= math.log(threshold) and pred <= 2:
+        #        temp[batch_idx, word_idx, :] = batch[word_idx]
+        #        batch_high_score[word_idx] = batch[word_idx]
+        #    
+        #    if not high_score.get(batch_idx):
+        #      if batch_high_score:
+        #        high_score[batch_idx] = batch_high_score
 
         for pred_no in range(len(yss)):
-            predicted = scores[pred_no].cpu()
+            #print(type(scores), scores, pred_no, yss)
+            predicted = scores[int(pred_no)].cpu()
             predicted = torch.pow(torch.zeros(predicted.size()) + math.e, predicted.data)
-
+            import ipdb; ipdb.set_trace()
             ys, p_id = yss[pred_no]
             doc_name = file_name[0]
             out_dict = {"pred": p_id, "sent": sent_id[0], "file": doc_name}
@@ -174,6 +178,8 @@ def create_arg_parser():
     parser.add_argument('--threshold', '-threshold', dest='threshold', type=float,
                         default=0.8,
                         help='threshold of score')
+    parser.add_argument('--cache', '-cache', dest='cache', type=str,
+                        help='cache')
     parser.add_argument('--iter', '-it', dest='iter', type=int,
                         default=3,
                         help='number of iteration')
@@ -252,6 +258,11 @@ def run():
 
     print(args.depth, args.depth_path, args.depth_arg)
 
+    if args.cache == "True":
+        CACHE = True
+    elif args.cache == "False":
+        CACHE = False
+
     model: nn.Module = []
     data = end2end_dataset(args.data_path + "/{}.json".format(args.tag), 100)
 
@@ -260,7 +271,7 @@ def run():
 
         word_embedding_matrix = pretrained_word_vecs(args.data_path, "/wordIndex.txt", args.vec_size_e)
 
-        model = E2EStackedBiRNN(args.vec_size_u, args.depth, 4, word_embedding_matrix, args.drop_u, True)
+        model = E2EStackedBiRNN(args.vec_size_u, args.depth, 4, word_embedding_matrix, args.drop_u, True, CACHE)
 
     model.load_state_dict(torch.load(args.model_file))
 
