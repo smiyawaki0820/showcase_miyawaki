@@ -1,1 +1,0 @@
-GATE_e2e-stack_ve256_vu256_depth6_adam_lr0.0001_du0.1_dh0.0_True_size60_sub1118_th0.8_it3_rs2020_preFalse
