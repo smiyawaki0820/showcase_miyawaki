@@ -27,7 +27,7 @@ http://xpaperchallenge.org/nlp/summaries/
 # 関連研究
 
 |paper|year|述語間関係|格構造の類似度|名詞句情報（項共有）|顕現性|
-|---|---|---|---|---|---|
+|---|:---:|:---:|:---:|:---:|:---:|
 |<a href="https://www.aclweb.org/anthology/P09-2022/">Imamura et al</a>|2009|||||
 |<a href="https://www.aclweb.org/anthology/P06-1079/">Iida et al</a>|2006|||||
 |<a href="https://www.aclweb.org/anthology/W03-2604/">Iida et al</a>|2003||||O|
