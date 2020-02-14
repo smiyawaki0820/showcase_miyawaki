@@ -1,8 +1,8 @@
 
 # 知見
 （文章中で一度述語の項となった名詞句は再び項になりやすいという知見）
-- センタリング理論[7]
-- 統計的観点[8]
+- <a href="https://www.aclweb.org/anthology/J95-2003/">センタリング理論</a>
+- <a href="https://www.aclweb.org/anthology/W98-1119.pdf">統計的観点</a>
 
 # 関連研究
 
