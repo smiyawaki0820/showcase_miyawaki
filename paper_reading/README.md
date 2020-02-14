@@ -6,6 +6,9 @@
 
 # 関連研究
 
+https://docs.google.com/spreadsheets/d/1LGFQBXlAGtoW-VHnCL2vO6w6_-v43hfXtEz_HDV39M4/edit#gid=0
+
+
 |paper|year|述語間関係|格構造の類似度|名詞句情報（項共有）|顕現性|
 |---|:---:|:---:|:---:|:---:|:---:|
 |<a href="https://www.aclweb.org/anthology/P09-2022/">Imamura et al</a>|2009|||||
