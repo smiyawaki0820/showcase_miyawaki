@@ -118,6 +118,7 @@ def train(out_dir, data_train, data_dev, model, model_id, epoch, lr_start, lr_mi
                 for it in range(iterate_num):
                     loss = 0
                     for batch_idx in range(len(yss)):
+                        import ipdb; ipdb.set_trace()
                         loss += loss_function(scores[it][batch_idx], yss[batch_idx])
                     #loss.backward()
                     losses.append(loss)
