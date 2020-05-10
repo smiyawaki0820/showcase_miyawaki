@@ -21,6 +21,9 @@ $ git merge --no-ff [指定branch]   # 現在作業中branch に 指定branch �
 
 # push
 $ git push origin [ローカルbranch]
+
+# delete
+$ git rm --cached [flie]  # remote のみ削除
 ```
 
 ### vim
@@ -28,4 +31,5 @@ $ git push origin [ローカルbranch]
 
 # 置換 g:all, c:確認しながら
 :%s/[置換前word]/[置換後word]/g
+ctrl + p  #補間
 ```
