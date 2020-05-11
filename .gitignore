@@ -14,5 +14,10 @@ pas/test/evalpas/*
 !pas/test/target
 !pas/test/util4s
 
+
 python/GAN/logs/*
 !python/GAN/logs/set_log.py
+!python/GAN/logs/test.v7.log
+python/GAN/datasets/mnist/*
+python/GAN/b128_lr0.0002_z62_ep25/*
+!python/GAN/b128_lr0.0002_z62_ep25/*.png
