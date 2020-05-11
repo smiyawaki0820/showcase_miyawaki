@@ -14,5 +14,15 @@ $ open git_commands.docset # 生成されたdocsetをdashに読み込む
 ```
 
 
-# 参考
+## 参考
 https://qiita.com/akira-hamada/items/9e95ca60880f7fa6acf9
+
+
+# r
+https://rstudio.com/resources/cheatsheets/
+
+## ggplot
+- https://rstudio.com/wp-content/uploads/2016/10/ggplot2-cheatsheet-2.0-ja.pdf
+- https://kazutan.github.io/fukuokaR11/intro_ggplot2.html
+## dplyr & tidyr
+- https://rstudio.com/wp-content/uploads/2015/09/data-wrangling-japanese.pdf
