@@ -31,6 +31,9 @@ cheatsheet do
         name '基本操作'
         notes <<-'CODE'
           ```R
+          $ Rscript --vanilla --slave hoge.R
+          ```
+          ```R
           x <- 1:3            # 1, 2, 3
           y <- c(1,2,3)       # vector
           x * y               # 1, 4, 9
