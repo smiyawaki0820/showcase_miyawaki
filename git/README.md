@@ -54,6 +54,10 @@ $ git branch
 # branch 変更
 $ git checkout [branch]   
 $ git branch -b checkout [branch] # 新規の場合
+$ git branch --delete [branch]
+$ git checkout -b [作成ローカルbranch] origin/[参照先リモートbranch]  # pull remote branch
+$ git checkout [参照先branch] -- [file] # pull file from branch
+$ git checkout [反映先branch] && git merge master  # master 内容を 反映先branch に反映
 ```
 ### ▼ state
 ```sh
@@ -101,7 +105,7 @@ $ git log --oneline --no-merges
 # commit に名前をつける
 $ git commit -a [tag] -m ["comment"]
 $ git tag --delete [tag]  # tag 削除
-$ git tag           # tag 一覧
+$ git tag                 # tag 一覧
 ```
 
 ### ▼ push & pull
@@ -115,6 +119,9 @@ $ git push --set-upstream origin master
 
 # pull
 $ git pull origin [branch]
+
+# others
+$ git merge --no-ff [指定branch]   # 現在作業中branch に 指定branch を merge (merge後も戻せるようにする)
 ```
 
 作成: Miyawaki
