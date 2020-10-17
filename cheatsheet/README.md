@@ -1,7 +1,6 @@
 # Dash でチートシートの作成
 * https://qiita.com/akira-hamada/items/9e95ca60880f7fa6acf9
 
-__コマンドラインで以下を入力__
 
 ## SETUP
 ```bash
