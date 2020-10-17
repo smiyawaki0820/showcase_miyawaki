@@ -42,3 +42,12 @@ class OnnxConverter:
 
     def compare_with_torch(self, y_torch, y_onnx) -> None:
         np.testing.assert_allclose(to_numpy(y_torch), y_onnx[0], rtol=1e-03, atol=1e-05)
+
+        
+""" refenrence
+* https://github.com/onnx/tutorials
+* https://github.com/onnx/tutorials/blob/master/tutorials/PytorchAddExportSupport.md
+* https://github.com/onnx/tutorials/blob/master/tutorials/PytorchOnnxExport.ipynb
+* https://pytorch.org/tutorials/advanced/super_resolution_with_onnxruntime.html
+* https://medium.com/@hemanths933/convert-bert-model-from-pytorch-to-onnx-and-run-inference-39150161fb23
+"""
