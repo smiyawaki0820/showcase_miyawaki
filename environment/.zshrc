@@ -5,32 +5,13 @@ eval "$(pyenv virtualenv-init -)"
 export PATH=/usr/local/cuda/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
-export PYTHONPATH="/work01/miyawaki/allennlp/seq2seq/configs:$PATH"
+export PYTHONPATH="hoge:$PATH"
 
 
-#### sbt, jdk
+# -----------------------------
+# PROMPT
+# -----------------------------
 
-function setjdk {
-    pathtojava=$(readlink -e $(which javac))
-    export JAVA_HOME=${pathtojava%/*/*}
-}
-setjdk
-
-path=( ~/jdk1.8.0_191/bin $path)
-
-####
-
-export PATH="/home/miyawaki_shumpei/local/bin/jdk1.8.0_191/bin:$PATH"  # jdk
-export PATH="/home/miyawaki_shumpei/sh:$PATH"
-export PATH="/home/miyawaki_shumpei/local/sbt/bin:$PATH"  # sbt
-export PATH="/home/miyawaki_shumpei/sbt/bin:$PATH"  # sbt
-export PATH="/home/miyawaki_shumpei/local/bin/jumanpp-2.0.0-rc3/bin:$PATH"
-export PATH="/home/miyawaki_shumpei/showcase_miyawaki/yans_pack:$PATH"
-
-export PERL5LIB="/home/miyawaki_shumpei/soft/srlconll-1.1/lib:$PERL5LIB"
-export PATH="$HOME/soft/srlconll-1.1/bin:$PATH"
-
-# Echo customized prompt
 function echo-prompt() {
   echo "%{$fg_bold[green]%}${HOST} %F{blue}ms%f : %F{magenta}%~%f
 %# "
@@ -46,118 +27,17 @@ RPROMPT='%F{black}%*'
 autoload -Uz colors
 colors
 
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 
 # -----------------------------
-# ssh connection then exec tmux
+# EXEC WHEN SSH CONNECTING
 # -----------------------------
+
 clear 
-cd /work01/miyawaki/exp/miya-fairseq-gec
 nvidia-smi
 
-#if [[ ! -n $TMUX && $- == *l* ]]; then
-#  clear
-#  tmux ls | awk '{print length() ,$0}' | sort -n | sed -r "s/[1-9]*(.*):.*?(\(.*\)).*?$/\2\t\1/" 
-#  # get the IDs
-#  ID="`tmux list-sessions`"
-#  if [[ -z "$ID" ]]; then
-#    tmux new-session
-#  fi
-#  read ID
-#  if [[ -n "$ID" ]]; then
-#    tmux attach-session -t "$ID" || tmux new-session -s "$ID"
-#  else
-#  #  :  # Start terminal normally
-#  fi
-#fi
-
-
-# -----------------------------
-# alias
-# -----------------------------
-alias runc='(){gcc -W $1 && ./a.out}'
-alias b2="cd ../../"
-alias b3="cd ../../../"
-alias b4="cd ../../../../"
-alias showcase="cd ~/cl-tohoku/showcase_miyawaki/"
-alias imi="cd ~/cl-tohoku/Club-IMI-taiwa-2019/"
-alias bert="cd ~/cl-tohoku/Club-IMI-taiwa-2019/sentiment_analysis/Japanese-sentiment-analysis/bert/"
-alias gec="cd ~/cl-tohoku/miya-fairseq-gec/"
-
-alias add='git add'
-alias commit='git commit -m'
-alias push='git push origin master'
-alias branch="git branch"
-alias checkout="git checkout"
-alias url="git config --get remote.origin.url"
-alias readme="vim README.md"
-alias status="git status --short"
-alias log="git log --oneline"
-alias push_ignore="git add .gitignore && git commit -m 'update .gitignore'"
-alias push_readme="git add README.md && git commit -m 'update README.md'"
-alias grm="git rm --cached"
-
-alias tm="tmux new-session -s"
-alias ta="tmux a -t"
-alias tk="tmux kill-session -t"
-alias tls="tmux ls"
-
-alias run="bash run.sh"
-alias train="bash train.sh"
-alias test="bash test.sh"
-
-alias py="python"
-alias ipy="ipython"
-
-alias vv="vim ~/.vimrc"
-alias e="exit"
-alias c='cd ./'
-alias gpu='nvidia-smi'
-alias cpu='ps aux --sort -%cpu | head -10'
-alias memory='free -m'
-alias sz="source ~/.zshrc"
-alias vz="vim ~/.zshrc"
-alias mkdir="mkdir -p"
-alias ls="ls -XF"
-alias cp="cp -v"
-
-export WSJ="/home/miyawaki_shumpei/cl-tohoku/miya-fairseq-gec/datasets/conll05/conll05.test.wsj.prop"
-alias wsj="perl ~/soft/srlconll-1.1/bin/srl-eval.pl ${WSJ} "
-
-alias test0='bash test.sh -g 0 -i ~/PAS/NTC_Matsu_converted'
-alias test1='bash test.sh -g 1 -i ~/PAS/NTC_Matsu_converted'
-alias test2='bash test.sh -g 2 -i ~/PAS/NTC_Matsu_converted'
-alias train0='bash train_edit.sh -g 0 -i ~/PAS/NTC_Matsu_converted'
-alias train1='bash train_edit.sh -g 1 -i ~/PAS/NTC_Matsu_converted'
-alias train2='bash train_edit.sh -g 2 -i ~/PAS/NTC_Matsu_converted'
-alias e0='bash exec.sh -g 0 -i ~/PAS/NTC_Matsu_converted'
-alias e1='bash exec.sh -g 1 -i ~/PAS/NTC_Matsu_converted'
-alias e2='bash exec.sh -g 2 -i ~/PAS/NTC_Matsu_converted'
-alias cdwork="cd && cd ../../work01/miyawaki"
-alias cdbert="cd ~/cl-tohoku/Club-IMI-taiwa-2019/Japanese-sentiment-analysis/src/bert"
-alias cdallen="cd && cd ../../work01/miyawaki/QA-SRL/SRL_S2S"
-alias evalpas="cd ~/Club-IMI-taiwa-2019/test/evalpas"
-alias edit='vim ./src/train_edit.py'
-alias eva='vim ./src/eval_edit.py'
-alias model="vim src/model_edit.py"
-
-alias adnis00='ssh miyawaki_shumpei@adnis00'
-alias adnis01='ssh miyawaki_shumpei@adnis01'
-alias adnis02='ssh miyawaki_shumpei@adnis02'
-alias ama01='ssh miyawaki_shumpei@amaretto01'
-alias ama02='ssh miyawaki_shumpei@amaretto02'
-alias neg01='ssh miyawaki_shumpei@negroni01'
-alias neg02='ssh miyawaki_shumpei@negroni02'
-alias spu01='ssh miyawaki_shumpei@spumoni01'
-alias spu02='ssh miyawaki_shumpei@spumoni02'
-alias spu04='ssh miyawaki_shumpei@spumoni04'
-alias spu05='ssh miyawaki_shumpei@spumoni05'
-
-
-if [[ -x `which colordiff` ]]; then # installされていたら
-  alias diff='colordiff'
-else
-  alias diff='diff'
-fi
+# mv したときに dir/.sh/.py を表示
 
 chpwd() {
   clear
@@ -174,7 +54,59 @@ chpwd() {
 
 
 # -----------------------------
-# Completion
+# ALIAS
+# -----------------------------
+
+alias runc='(){gcc -W $1 && ./a.out}'
+alias b2="cd ../../"
+alias b3="cd ../../../"
+alias b4="cd ../../../../"
+
+alias add='git add'
+alias commit='git commit -m'
+alias push='git push origin master'
+alias branch="git branch"
+alias checkout="git checkout"
+alias url="git config --get remote.origin.url"
+alias readme="vim README.md"
+alias status="git status --short"
+alias log="git log --oneline"
+alias rmg="git rm --cached"
+
+alias tm="tmux new-session -s"
+alias ta="tmux a -t"
+alias tk="tmux kill-session -t"
+alias tls="tmux ls"
+
+alias run="bash run.sh"
+
+alias py="python"
+alias ipy="ipython"
+
+alias vv="vim ~/.vimrc"
+alias vz="vim ~/.zshrc"
+alias sz="source ~/.zshrc"
+alias c='cd ./'
+alias e="exit"
+alias gpu='nvidia-smi'
+alias gstat='gpustat -i'
+alias cpu='ps aux --sort -%cpu | head -10'
+alias memory='free -m'
+alias mkdir="mkdir -p"
+alias ls="ls -XF"
+alias cp="cp -v"
+
+export WSJ="/home/miyawaki_shumpei/cl-tohoku/miya-fairseq-gec/datasets/conll05/conll05.test.wsj.prop"
+alias wsj="perl ~/soft/srlconll-1.1/bin/srl-eval.pl ${WSJ} "
+
+alias hoge00='ssh miyawaki_shumpei@hoge00'
+
+[[ -x `which colordiff` ]] && alias diff='colordiff' || alias diff='diff'
+
+
+
+# -----------------------------
+# COMPLETION
 # -----------------------------
 
 autoload -Uz compinit ; compinit # 自動補完を有効にする
@@ -190,8 +122,9 @@ setopt list_packed
 # 補完候補にファイルの種類も表示する
 setopt list_types
 
+
 # -----------------------------
-# git
+# GIT PROMPT
 # -----------------------------
 
 # ブランチ名を色付きで表示させるメソッド
@@ -234,8 +167,9 @@ setopt prompt_subst
 # プロンプトの右側(RPROMPT)にメソッドの結果を表示させる
 RPROMPT='`rprompt-git-current-branch` %F{black}%*'
 
+
 # -----------------------------
-# History
+# HISTORY w/ fzf
 # -----------------------------
 HISTFILE=~/.zsh_history
 HISTSIZE=6000000
@@ -278,6 +212,4 @@ fd() {
                   -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
-export SA_DATA='/work01/miyawaki/data/twitter_data_for_sentiment'
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
