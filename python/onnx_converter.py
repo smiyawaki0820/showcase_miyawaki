@@ -4,7 +4,7 @@ import onnx
 
 if torch.cuda.is_available():
     try:
-        import onnxruntime-gpu as ort
+        import onnxruntime_gpu as ort
     except ImportError:
         import onnxruntime as ort
 else:
