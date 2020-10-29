@@ -31,9 +31,18 @@ __work flow__
 **Conflict**
 > 同じファイルの同じ部分をふたつのブランチで別々に変更してそれをマージしようとすると生じる．
 
+**git archive**
+> 特定 commit のアーカイブ
+```bash
+$ git archive HEAD --output=hoge.tar.gz
+```
 
-**Pull Request**
-> 
+## .git
+- `.git`
+- `.gitignore`
+- `.gitattributes`
+- `.gitkeep`
+
 
 ## Commands
 
@@ -52,19 +61,33 @@ $ git clone [url]
 $ git branch
 
 # branch 変更
-$ git checkout [branch]   
-$ git branch -b checkout [branch] # 新規の場合
-$ git branch --delete [branch]
-$ git checkout -b [作成ローカルbranch] origin/[参照先リモートbranch]  # pull remote branch
+$ git checkout [local-branch]
+$ git checkout -b [local-branch] [origin/remote-branch]
+$ git branch --delete [local-branch]
+$ git push --delete [remote-branch]
+
 $ git checkout [参照先branch] -- [file] # pull file from branch
 $ git checkout [反映先branch] && git merge master  # master 内容を 反映先branch に反映
 ```
+
 ### ▼ state
 ```sh
-# status 一覧 (-s: short表示)
-$ git status -s --branch
+# 作業ファイルを staging
+$ git add [file/dir]
+$ git rm --cache [file/dir]
+$ git mv [file]
 
-# repsitory file と working file の差分
+# add したファイルを Local Repos に commit
+$ git commit [-a tag] [-m "comment"]
+$ git reset --soft [commit id]
+$ git reset --soft HEAD^
+
+# tag
+$ git tag [--delete tag]
+
+$ git status -s --branch
+$ git log --oneline --no-merges
+
 $ git diff [file]
 ```
 
@@ -80,38 +103,10 @@ git status --short
 | DU | deleted conflict |
 
 
-### ▼ add
-```sh
-# 作業ファイルを staging
-$ git add [file/dir]
-
-# add されたファイルの削除・rename（管理対象から外す）
-$ git rm --cache [file/dir(-r)]
-$ git mv [file]
-```
-
-### ▼ commit
-```sh
-# add したファイルを Local Repos に commit
-$ git commit -m ["comment"]
-
-# 特定の commit 状態に戻ってやり直す
-$ git reset --soft [commit id]
-$ git reset --soft HEAD^        # 直前
-
-# commit log
-$ git log --oneline --no-merges
-
-# commit に名前をつける
-$ git commit -a [tag] -m ["comment"]
-$ git tag --delete [tag]  # tag 削除
-$ git tag                 # tag 一覧
-```
-
 ### ▼ push & pull
 ```sh
 # add したファイルを Remote Branch に commit
-$ git push origin [branch/tag]
+$ git push origin [branch/tag] [local-branch:remote-branch]
 $ git push --delete origin [branch/tag]
 
 # 新規 branch で push する場合（上流ブランチ）
