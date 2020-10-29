@@ -7,7 +7,7 @@
 * [Compute Engine での GPU の料金](https://cloud.google.com/compute/gpus-pricing#gpus)
 * [GPU の機能・GPU ハードウェアのタイプの詳細](https://cloud.google.com/compute/docs/gpus)
 * [Deep Learning VM のドキュメント](https://cloud.google.com/deep-learning-vm/docs/images)
-* [GPUの割り当ての増加をリクエスト](https://cloud.google.com/compute/quotas#requesting_additional_quota)
+* [リソースの割り当て](https://cloud.google.com/compute/quotas#requesting_additional_quota)
 
 
 #### インスタンス作成ツール
@@ -36,3 +36,7 @@ $ gcloud builds submit --tag gcr.io/<your_project_id>/${MODEL}:${MODEL_TAG} .
 
 # References
 * [gcloud コマンドライン ツールのクイック リファレンス](https://cloud.google.com/sdk/docs/cheatsheet?hl=ja)
+* [gcloud compute](https://cloud.google.com/compute/docs/gcloud-compute)
+* [VM と MIG へのコンテナのデプロイ](https://cloud.google.com/compute/docs/containers/deploying-containers?_ga=2.31970941.-299684051.1596777283)
+* [GCPでDeep LearningのためのGPU環境を構築する (Zeals.TechBlog)](https://tech.zeals.co.jp/entry/2019/01/08/094054)
+* [ディープラーニングイメージで構築する快適・高速な機械学習環境 (slideshare)](https://www.slideshare.net/ooyabuy/ss-114212790)
