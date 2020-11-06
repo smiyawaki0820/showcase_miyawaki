@@ -25,6 +25,16 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 ```
 
+**namedtupleで簡易クラス**
+クラスベースなので継承も可能
+```python
+from collections import namedtuple
+Car = namedtuple('Car', ['color', 'mileage'])
+my_car = Car('red', 123.4)
+print(my_car.color, my_car.mileage)
+```
+
+
 * [pathlibチートシート](https://qiita.com/meznat/items/a1cc61edb1e340d0b1a2)
 * [ハイパラ管理のすすめ -ハイパーパラメータをHydra+MLflowで管理しよう-](https://ymym3412.hatenablog.com/entry/2020/02/09/034644)
 * [chariot](https://github.com/chakki-works/chariot)
