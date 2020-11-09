@@ -35,6 +35,7 @@ $ gcloud builds submit --tag gcr.io/<your_project_id>/${MODEL}:${MODEL_TAG} .
 
 
 # References
+* [gcloud reference](https://cloud.google.com/sdk/gcloud/reference?hl=ja)
 * [gcloud コマンドライン ツールのクイック リファレンス](https://cloud.google.com/sdk/docs/cheatsheet?hl=ja)
 * [gcloud compute](https://cloud.google.com/compute/docs/gcloud-compute)
 * [VM と MIG へのコンテナのデプロイ](https://cloud.google.com/compute/docs/containers/deploying-containers?_ga=2.31970941.-299684051.1596777283)
